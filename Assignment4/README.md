@@ -1,2 +1,1 @@
-# FPGA_Lab
-Contains assignment and task related to course "FPGA Lab"
+Assignment4 video link - [https://youtu.be/hbajID0iAbM]
