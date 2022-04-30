@@ -1,10 +1,10 @@
-How To
-======
+Flashing into ESP32
+===================
 
-Build FPGA
-----------
+Process
+-------
 
-From the project root dir, execute:
+Connect onboard ESP32 UART pins
 
 ::
   
