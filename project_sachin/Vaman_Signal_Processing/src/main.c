@@ -7,7 +7,7 @@ https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  *    File   : main.c
  *    Purpose: main for Pygmy blink onboard led
- *                                                          
+ *
  *=========================================================*/
 
 #include "Fw_global_config.h"   // This defines application specific charactersitics
@@ -56,7 +56,7 @@ void PyHal_GPIO_SetDir(uint8_t gpionum,uint8_t iomode);
 int PyHal_GPIO_GetDir(uint8_t gpionum);
 int PyHal_GPIO_Set(uint8_t gpionum, uint8_t gpioval);
 int PyHal_GPIO_Get(uint8_t gpionum);
-float* convo(float x[], float h[], int length_x, int length_h, int length_y); 
+float* convo(float x[], float h[], int length_x, int length_h, int length_y);
 float* correlate(float x[], float y[], int length_x, int length_y, int length_r);
 void print_float(float* num);
 
@@ -64,7 +64,7 @@ int main(void)
 {
     uint32_t i=0,j=0,k=0;
     SOFTWARE_VERSION_STR = "qorc-onion-apps/qf_hello-fpga-gpio-ctlr";
-    
+
     qf_hardwareSetup();
     nvic_init();
 
@@ -81,20 +81,21 @@ int main(void)
 
     CLI_start_task( my_main_menu );
 	HAL_Delay_Init();
-    
+
     //LED pins Output
     PyHal_GPIO_SetDir(18,1);
     PyHal_GPIO_SetDir(21,1);
     PyHal_GPIO_SetDir(22,1);
-    
+
     //input pins
     PyHal_GPIO_SetDir(4,0);
     PyHal_GPIO_SetDir(5,0);
     PyHal_GPIO_SetDir(6,0);
-    int count = 2;	
+    int count = 2;
     int r;
     while(1)
     {
+        //Reading the samples from ESP32 using UART communication
         char buffer[200];
         uint8_t ind = 0;
         r = 0;
@@ -107,7 +108,8 @@ int main(void)
                 ind++;
             }
         }
-        
+
+        //Parsing the received samples in string form into float array for processing.
         char* pEnd;
         char toPrint[20];
         float x1[20];
@@ -118,10 +120,15 @@ int main(void)
             x1[i] = strtof((const char*)pEnd,&pEnd);
             i++;
         }
+
         int length_x = i;
         int length_y;
         float* y;
+
+        //Filter array
         float h1[] = { 0.6715, -1.2075, 0.7172, 1.6302, 0.4889, 1.0347, 0.7269, -0.3034, 0.2939, -0.7873, 0.8884, -1.1471, -1.0689, -0.8095, -2.9443 };
+
+        //Depending on the status of GPIO4 pin, Performing convolution or correlation operation on the received samples.
         int choice = PyHal_GPIO_Get(4);
         if(choice==0) {//convolution
             length_y = length_x + 15 - 1;
@@ -131,7 +138,8 @@ int main(void)
             length_y = length_x + 15 - 1;
             y = correlate(x1, h1, length_x, 15, length_y); //Calling convolving function.
         }
-        
+
+        //Sending the output samples back to ESP32 using UART communiaction
         float *x = y;
         while(length_y--) {
             print_float(x);
@@ -139,7 +147,7 @@ int main(void)
         }
         dbg_str("x\n");
         HAL_DelayUSec(500000);
-    } 
+    }
 }
 
 static void nvic_init(void)
@@ -151,7 +159,7 @@ static void nvic_init(void)
     NVIC_SetPriority(CfgDma_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
     NVIC_SetPriority(Uart_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
     NVIC_SetPriority(FbMsg_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
- }    
+ }
 
 //needed for startup_EOSS3b.s asm file
 void SystemInit(void)
@@ -217,7 +225,7 @@ int PyHal_GPIO_Set(uint8_t gpionum, uint8_t gpioval)
         //Direction not Set to Output
         return -1;
     }
-    
+
     tempscratch32 = *(uint32_t*)(FGPIO_OUTPUT_REG);
 
     if(gpioval > 0)
@@ -227,7 +235,7 @@ int PyHal_GPIO_Set(uint8_t gpionum, uint8_t gpioval)
     else
     {
         *(uint32_t*)(FGPIO_OUTPUT_REG) = tempscratch32 & ~(0x1 << gpionum);
-    }    
+    }
 
     return 0;
 }
