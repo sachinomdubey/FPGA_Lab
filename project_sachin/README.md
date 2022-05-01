@@ -7,5 +7,5 @@ This project aims to receive signal samples over WiFi into onboard-ESP32 and the
 
 A sample plot is as shown below:
 
-![alt text](https://github.com/sachinomdubey/FPGA_Lab/blob/main/project_sachin/Figures/plot_fpga_lab.png)
+![alt text](https://github.com/sachinomdubey/FPGA_Lab/blob/main/project_sachin/Figures/plot_fpga_lab.jpg)
 
